@@ -1,6 +1,6 @@
 # CareLoop Clinics — No-Show Guard
 
-**Repository:** `<<PASTE YOUR PUBLIC GITHUB REPO LINK HERE>>`
+**Repository:** https://github.com/cwil-code/careloop-no-show-guard
 
 From a raw booking export to a cleaned table, SQL evidence of where no-shows cluster, a risk model the front desk can use the evening before, and AI-extracted reasons from call-centre notes.
 
@@ -13,11 +13,11 @@ From a raw booking export to a cleaned table, SQL evidence of where no-shows clu
 1. **Data:** 1,020 raw rows → **990 clean bookings** after removing 20 duplicates, 6 unreadable dates and 4 blank statuses; **218 no-shows (22.0%)**.
 2. **SQL:** no-show risk climbs with lead time, from **16.2%** for bookings made 1–7 days ahead to **30.0%** at 15–30 days and **60.5%** at 31+ days.
 3. **Model:** logistic regression ranks risk best (**test ROC-AUC 0.789**). At a threshold of **0.35** it flags 49 of 198 test bookings and catches **57%** of the real no-shows. In this model, a reminder is associated with about **69% lower** no-show odds.
-4. **GenAI:** `<<from notes_analysed.csv: e.g. "X of the 9 classified notes cite a forgotten or missing reminder…">>`. Both notes classed as `forgot_or_no_reminder` (N001, N007) belong to appointments with `reminder_sent = No`, as do **5 of the 10** notes overall.
+4. **GenAI:** Gemini classified all **9** non-blank notes into allowed root causes, all valid under Pydantic (the blank note N004 was skipped with no API call; **14** API calls in total). The most common reasons were a forgotten or missing reminder, distance or transport, and work or schedule (**2** notes each). Both notes classed as `forgot_or_no_reminder` (N001, N007) belong to appointments with `reminder_sent = No`, as do **5 of the 10** notes overall.
 
 ## Recommendation
 
-CareLoop should first make sure **every booking gets a reminder**, then use the risk score each evening to **phone the riskiest patients**. In the model, holding other factors constant, a reminder goes with about 69% lower odds of a no-show (odds × 0.31). In the follow-up notes, `<<your Part 4 count>>` patients said they forgot or never received a reminder, and both of those appointments had `reminder_sent = No`. Calls should go first to bookings made far ahead: the no-show rate is 30.0% at 15–30 days and 60.5% beyond 30 days, against 16.2% within a week. At the 0.35 threshold the model flags about 25% of bookings (49 of 198 in the test set), and 57% of those flags are real no-shows. Clinic-level follow-up should start with Hadapsar (27.3%) and Malviya Nagar (26.8%), which have both high rates and enough bookings to trust the figures. Gomti Nagar's 33.3% is the highest rate, but it rests on only 90 appointments.
+CareLoop should first make sure **every booking gets a reminder**, then use the risk score each evening to **phone the riskiest patients**. In the model, holding other factors constant, a reminder goes with about 69% lower odds of a no-show (odds × 0.31). In the follow-up notes, 2 of the 9 patients reached said they forgot or never received a reminder, and both of those appointments had `reminder_sent = No`. Calls should go first to bookings made far ahead: the no-show rate is 30.0% at 15–30 days and 60.5% beyond 30 days, against 16.2% within a week. At the 0.35 threshold the model flags about 25% of bookings (49 of 198 in the test set), and 57% of those flags are real no-shows. Clinic-level follow-up should start with Hadapsar (27.3%) and Malviya Nagar (26.8%), which have both high rates and enough bookings to trust the figures. Gomti Nagar's 33.3% is the highest rate, but it rests on only 90 appointments.
 
 ## Model choice
 
